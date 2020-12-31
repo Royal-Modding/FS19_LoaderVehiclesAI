@@ -57,7 +57,7 @@ function AILoaderVehicle:onPostLoad(savegame)
     spec.rearArea.node = spec.shovelNode.node
     spec.rearArea.length = spec.shovelNode.length / 2
     spec.rearArea.offset = -spec.rearArea.length
-    spec.rearArea.length = spec.rearArea.length * 1.2
+    spec.rearArea.length = spec.rearArea.length * 1.1
     spec.rearArea.width = spec.shovelNode.width
     spec.rearArea.active = false
 end
@@ -136,7 +136,7 @@ function AILoaderVehicle:onAIStart()
         spec.currentDischargeNode = self.spec_dischargeable.currentDischargeNode
         spec.shovelFillLitersPerSecondBackup = spec.shovelNode.fillLitersPerSecond
         -- set shovel fill speed same as unload speed to make everything much smoother
-        spec.shovelNode.fillLitersPerSecond = spec.currentDischargeNode.emptySpeed
+        spec.shovelNode.fillLitersPerSecond = spec.currentDischargeNode.emptySpeed * 1.1
     end
 end
 
