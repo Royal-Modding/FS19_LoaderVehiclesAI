@@ -47,6 +47,13 @@ end
 function AILoaderVehicle:onPostLoad(savegame)
     local spec = self.spec_aiLoaderVehicle
     spec.shovelNode = self.spec_shovel.shovelNodes[1]
+
+    -- fix for holmer terra felis 2
+    local x, y, z = getTranslation(spec.shovelNode.node)
+    if string.format("%.2f", x) == "0.00" and string.format("%.2f", y) == "-0.98" and string.format("%.2f", z) == "2.27" then
+        setTranslation(spec.shovelNode.node, x, y, z + 2.056)
+    end
+
     spec.frontArea = {}
     spec.frontArea.node = spec.shovelNode.node
     spec.frontArea.length = spec.shovelNode.length / 1.5
@@ -136,7 +143,9 @@ function AILoaderVehicle:onAIStart()
         spec.currentDischargeNode = self.spec_dischargeable.currentDischargeNode
         spec.shovelFillLitersPerSecondBackup = spec.shovelNode.fillLitersPerSecond
         -- set shovel fill speed same as unload speed to make everything much smoother
-        spec.shovelNode.fillLitersPerSecond = spec.currentDischargeNode.emptySpeed * 1.1
+        if spec.shovelNode.fillLitersPerSecond > spec.currentDischargeNode.emptySpeed then
+            spec.shovelNode.fillLitersPerSecond = spec.currentDischargeNode.emptySpeed * 1.1
+        end
     end
 end
 

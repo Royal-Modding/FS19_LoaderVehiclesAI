@@ -15,9 +15,9 @@ The helper will keep to drive and load until he finds nothing left to load.
 		</en>
 		<de>
 			<![CDATA[
-Mit diesem Mod können Helfer Ihre Laderfahrzeuge fahren. Stellen Sie das Fahrzeug einfach direkt vor den Haufen und drücken Sie "H".
+Mit diesem Mod können Helfer Ihre Verladefahrzeuge fahren. Stellen Sie das Fahrzeug einfach direkt vor den Haufen und drücken Sie "H".
 Wenn Sie das Material auf dem Boden abladen wollen, drücken Sie " CTRL + I ", bevor Sie den Helfer anheuern.
-Der Helfer wird so lange fahren und laden, bis er nichts mehr zum Laden findet.
+Der Helfer wird so lange fahren und laden, bis er keinen Haufen mehr findet.
 ]]>
 		</de>
 		<fr>
