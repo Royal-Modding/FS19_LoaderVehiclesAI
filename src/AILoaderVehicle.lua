@@ -56,24 +56,66 @@ function AILoaderVehicle:onPostLoad(savegame)
 
     spec.frontArea = {}
     spec.frontArea.node = spec.shovelNode.node
-    spec.frontArea.length = spec.shovelNode.length / 1.5
-    spec.frontArea.offset = spec.frontArea.length
+    spec.frontArea.length = spec.shovelNode.length / 1.2
+    spec.frontArea.lengthOffset = spec.frontArea.length
     spec.frontArea.width = spec.shovelNode.width
+    spec.frontArea.widthOffset = 0
     spec.frontArea.active = false
+
     spec.rearArea = {}
     spec.rearArea.node = spec.shovelNode.node
-    spec.rearArea.length = spec.shovelNode.length / 2
-    spec.rearArea.offset = -spec.rearArea.length
-    spec.rearArea.length = spec.rearArea.length * 1.1
+    spec.rearArea.length = (spec.shovelNode.length / 2) * 1.1
+    spec.rearArea.lengthOffset = -spec.rearArea.length
     spec.rearArea.width = spec.shovelNode.width
+    spec.rearArea.widthOffset = 0
     spec.rearArea.active = false
+
+    local steerAreasWidth = spec.shovelNode.width / 5
+
+    spec.steerAreaLeft1 = {}
+    spec.steerAreaLeft1.active = false
+    spec.steerAreaLeft1.node = spec.shovelNode.node
+    spec.steerAreaLeft1.length = spec.shovelNode.length / 1.5
+    spec.steerAreaLeft1.lengthOffset = spec.frontArea.length
+    spec.steerAreaLeft1.width = steerAreasWidth
+    spec.steerAreaLeft1.widthOffset = steerAreasWidth * 2
+    spec.steerAreaLeft1.steerAngle = 0.2
+
+    spec.steerAreaLeft2 = {}
+    spec.steerAreaLeft2.active = false
+    spec.steerAreaLeft2.node = spec.shovelNode.node
+    spec.steerAreaLeft2.length = spec.shovelNode.length / 1.5
+    spec.steerAreaLeft2.lengthOffset = spec.frontArea.length
+    spec.steerAreaLeft2.width = steerAreasWidth
+    spec.steerAreaLeft2.widthOffset = steerAreasWidth * 4
+    spec.steerAreaLeft2.steerAngle = 0.5
+
+    spec.steerAreaRight1 = {}
+    spec.steerAreaRight1.active = false
+    spec.steerAreaRight1.node = spec.shovelNode.node
+    spec.steerAreaRight1.length = spec.shovelNode.length / 1.5
+    spec.steerAreaRight1.lengthOffset = spec.frontArea.length
+    spec.steerAreaRight1.width = steerAreasWidth
+    spec.steerAreaRight1.widthOffset = -steerAreasWidth * 2
+    spec.steerAreaRight1.steerAngle = -0.2
+
+    spec.steerAreaRight2 = {}
+    spec.steerAreaRight2.active = false
+    spec.steerAreaRight2.node = spec.shovelNode.node
+    spec.steerAreaRight2.length = spec.shovelNode.length / 1.5
+    spec.steerAreaRight2.lengthOffset = spec.frontArea.length
+    spec.steerAreaRight2.width = steerAreasWidth
+    spec.steerAreaRight2.widthOffset = -steerAreasWidth * 4
+    spec.steerAreaRight2.steerAngle = -0.5
+
+    spec.areas = {spec.frontArea, spec.rearArea, spec.steerAreaLeft1, spec.steerAreaLeft2, spec.steerAreaRight1, spec.steerAreaRight2}
+    spec.steerAreas = {spec.steerAreaLeft1, spec.steerAreaLeft2, spec.steerAreaRight1, spec.steerAreaRight2}
 end
 
 ---Updates the AI logic that is possible to be run at a lower frequency (by default every 4 frames)
 -- Primarly this is the evaluation of the drive strategies (collsion, etc.)
 -- Runs only on server
 -- @param float dt time since last call in ms
--- @includeCode
 function AILoaderVehicle:updateAILowFrequency(superFunc, dt)
     if superFunc ~= nil then
         superFunc(self, dt)
@@ -92,11 +134,10 @@ function AILoaderVehicle:updateAILowFrequency(superFunc, dt)
                 self:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
             end
         end
-        local areas = {spec.frontArea, spec.rearArea}
-        for _, area in pairs(areas) do
-            local sx, _, sz = localToWorld(area.node, -area.width, 0, area.offset - area.length)
-            local wx, _, wz = localToWorld(area.node, area.width, 0, area.offset - area.length)
-            local hx, _, hz = localToWorld(area.node, -area.width, 0, area.offset + area.length)
+        for _, area in pairs(spec.areas) do
+            local sx, _, sz = localToWorld(area.node, area.widthOffset - area.width, 0, area.lengthOffset - area.length)
+            local wx, _, wz = localToWorld(area.node, area.widthOffset + area.width, 0, area.lengthOffset - area.length)
+            local hx, _, hz = localToWorld(area.node, area.widthOffset - area.width, 0, area.lengthOffset + area.length)
             area.active = DensityMapHeightUtil.getFillTypeAtArea(sx, sz, wx, wz, hx, hz) ~= FillType.UNKNOWN
         end
     end
@@ -106,7 +147,6 @@ end
 -- Primarly this is wheel turning / motor logic
 -- Runs only on server
 -- @param float dt time since last call in ms
--- @includeCode
 function AILoaderVehicle:updateAI(superFunc, dt)
     if superFunc ~= nil then
         superFunc(self, dt)
@@ -117,7 +157,14 @@ function AILoaderVehicle:updateAI(superFunc, dt)
             local level = self:getFillUnitFillLevel(spec.shovelNode.fillUnitIndex)
             local capacity = self:getFillUnitCapacity(spec.shovelNode.fillUnitIndex) * 0.85
             if not spec.rearArea.active and level < capacity then
-                AIVehicleUtil.driveToPoint(self, dt, spec.speed * 2, true, true, 0, 0, spec.speed, true)
+                local steerAngle = 0
+                for _, area in pairs(spec.steerAreas) do
+                    if area.active then
+                        steerAngle = steerAngle + (area.steerAngle or 0)
+                    end
+                end
+
+                AIVehicleUtil.driveToPoint(self, dt, spec.speed * 2, true, true, steerAngle, 0, spec.speed, false)
             else
                 AIVehicleUtil.driveToPoint(self, dt, 0, false, true, 0, 0, 0, true)
             end
@@ -131,9 +178,104 @@ end
 
 function AILoaderVehicle:onUpdate(dt)
     local spec = self.spec_aiLoaderVehicle
+
     if VehicleDebug.state == VehicleDebug.DEBUG_AI then
-        Utility.drawDebugRectangle(spec.frontArea.node, -spec.frontArea.width, spec.frontArea.width, spec.frontArea.offset - spec.frontArea.length, spec.frontArea.offset + spec.frontArea.length, 0.5, true, 1, 0, 0, 0, 1, 0, spec.frontArea.active)
-        Utility.drawDebugRectangle(spec.rearArea.node, -spec.rearArea.width, spec.rearArea.width, spec.rearArea.offset - spec.rearArea.length, spec.rearArea.offset + spec.rearArea.length, 0.5, true, 1, 0, 0, 0, 1, 0, spec.rearArea.active)
+        Utility.drawDebugRectangle(
+            spec.frontArea.node,
+            spec.frontArea.widthOffset - spec.frontArea.width,
+            spec.frontArea.widthOffset + spec.frontArea.width,
+            spec.frontArea.lengthOffset - spec.frontArea.length,
+            spec.frontArea.lengthOffset + spec.frontArea.length,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.frontArea.active
+        )
+        Utility.drawDebugRectangle(
+            spec.rearArea.node,
+            spec.rearArea.widthOffset - spec.rearArea.width,
+            spec.rearArea.widthOffset + spec.rearArea.width,
+            spec.rearArea.lengthOffset - spec.rearArea.length,
+            spec.rearArea.lengthOffset + spec.rearArea.length,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.rearArea.active
+        )
+        Utility.drawDebugRectangle(
+            spec.steerAreaLeft1.node,
+            spec.steerAreaLeft1.widthOffset + spec.steerAreaLeft1.width - 0.1,
+            spec.steerAreaLeft1.widthOffset - spec.steerAreaLeft1.width + 0.1,
+            spec.steerAreaLeft1.lengthOffset - spec.steerAreaLeft1.length + 0.1,
+            spec.steerAreaLeft1.lengthOffset + spec.steerAreaLeft1.length - 0.1,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.steerAreaLeft1.active
+        )
+        Utility.drawDebugRectangle(
+            spec.steerAreaLeft2.node,
+            spec.steerAreaLeft2.widthOffset + spec.steerAreaLeft2.width - 0.1,
+            spec.steerAreaLeft2.widthOffset - spec.steerAreaLeft2.width + 0.1,
+            spec.steerAreaLeft2.lengthOffset - spec.steerAreaLeft2.length + 0.1,
+            spec.steerAreaLeft2.lengthOffset + spec.steerAreaLeft2.length - 0.1,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.steerAreaLeft2.active
+        )
+        Utility.drawDebugRectangle(
+            spec.steerAreaRight1.node,
+            spec.steerAreaRight1.widthOffset + spec.steerAreaRight1.width - 0.1,
+            spec.steerAreaRight1.widthOffset - spec.steerAreaRight1.width + 0.1,
+            spec.steerAreaRight1.lengthOffset - spec.steerAreaRight1.length + 0.1,
+            spec.steerAreaRight1.lengthOffset + spec.steerAreaRight1.length - 0.1,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.steerAreaRight1.active
+        )
+        Utility.drawDebugRectangle(
+            spec.steerAreaRight2.node,
+            spec.steerAreaRight2.widthOffset + spec.steerAreaRight2.width - 0.1,
+            spec.steerAreaRight2.widthOffset - spec.steerAreaRight2.width + 0.1,
+            spec.steerAreaRight2.lengthOffset - spec.steerAreaRight2.length + 0.1,
+            spec.steerAreaRight2.lengthOffset + spec.steerAreaRight2.length - 0.1,
+            0.5,
+            true,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            spec.steerAreaRight2.active
+        )
     end
 end
 
