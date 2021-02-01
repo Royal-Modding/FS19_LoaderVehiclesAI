@@ -167,8 +167,14 @@ function AILoaderVehicle:getCanStartAIVehicle(superFunc)
         return false
     end
 
-    if AIVehicle.numHirablesHired >= g_currentMission.maxNumHirables then
-        return false
+    if AIVehicle.getNumHirablesHiredByFarm ~= nil then
+        if AIVehicle.getNumHirablesHiredByFarm(self:getOwnerFarmId()) >= (g_currentMission.maxNumHirables * 2) then
+            return false
+        end
+    else
+        if AIVehicle.numHirablesHired >= g_currentMission.maxNumHirables then
+            return false
+        end
     end
 
     return true
