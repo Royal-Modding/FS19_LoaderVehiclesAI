@@ -1,9 +1,8 @@
---
--- ${title}
---
--- @author ${author}
--- @version ${version}
--- @date 09/12/2020
+--- ${title}
+
+---@author ${author}
+---@version r_version_r
+---@date 09/12/2020
 
 AILoaderVehicle = {}
 
@@ -113,9 +112,9 @@ function AILoaderVehicle:onPostLoad(savegame)
 end
 
 ---Updates the AI logic that is possible to be run at a lower frequency (by default every 4 frames)
--- Primarly this is the evaluation of the drive strategies (collsion, etc.)
--- Runs only on server
--- @param float dt time since last call in ms
+---Primarly this is the evaluation of the drive strategies (collsion, etc.)
+---@param superFunc function
+---@param dt number time since last call in ms
 function AILoaderVehicle:updateAILowFrequency(superFunc, dt)
     if superFunc ~= nil then
         superFunc(self, dt)
@@ -144,9 +143,10 @@ function AILoaderVehicle:updateAILowFrequency(superFunc, dt)
 end
 
 ---Updates the AI logic that is needed to be called at a regular frequency (by default every 2 frames)
--- Primarly this is wheel turning / motor logic
--- Runs only on server
--- @param float dt time since last call in ms
+---Primarly this is wheel turning / motor logic
+---Runs only on server
+---@param superFunc function
+---@param dt number time since last call in ms
 function AILoaderVehicle:updateAI(superFunc, dt)
     if superFunc ~= nil then
         superFunc(self, dt)
