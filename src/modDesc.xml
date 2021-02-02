@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="${descVersion}">
 	<author>${author}</author>
 	<version>${version}</version>
@@ -12,8 +12,10 @@ With this mod helpers will be able to drive your loader vehicles, just place the
 If you want to unload the material on the ground, press "CTRL + I" before you hire the helper.
 The helper will keep to drive and load until he finds nothing left to load.
 
-- Steering
-- Compatibility with other mods
+Changelog 1.1.0.0:
+- Implemented ability to steer for AI
+- Improved compatibility with other mods
+- Improved 'Holmer Terra Felis 2' behavior
 ]]>
 		</en>
 		<de>
@@ -21,6 +23,11 @@ The helper will keep to drive and load until he finds nothing left to load.
 Mit diesem Mod können Helfer Ihre Verladefahrzeuge fahren. Stellen Sie das Fahrzeug einfach direkt vor den Haufen und drücken Sie "H".
 Wenn Sie das Material auf dem Boden abladen wollen, drücken Sie " CTRL + I ", bevor Sie den Helfer anheuern.
 Der Helfer wird so lange fahren und laden, bis er keinen Haufen mehr findet.
+
+Changelog 1.1.0.0:
+- Implementierte Fähigkeit, für AI zu lenken
+- Verbesserte Kompatibilität mit anderen Mods
+- Verbessertes 'Holmer Terra Felis 2'-Verhalten
 ]]>
 		</de>
 		<fr>
@@ -28,6 +35,11 @@ Der Helfer wird so lange fahren und laden, bis er keinen Haufen mehr findet.
 Avec ce mod, les assistants pourront conduire vos véhicules de chargement, il suffit de placer le véhicule directement devant le tas et d'appuyer sur la touche "H".
 Si vous souhaitez décharger le matériel sur le sol, appuyez sur "CTRL + I" avant d'engager l'assistant.
 L'aide continuera à conduire et à charger jusqu'à ce qu'il ne trouve plus rien à charger.
+
+Changelog 1.1.0.0:
+- Mise en œuvre de la capacité à se diriger vers l'IA
+- Compatibilité améliorée avec d'autres mods
+- Amélioration du comportement du "Holmer Terra Felis 2
 ]]>
 		</fr>
 	</description>
