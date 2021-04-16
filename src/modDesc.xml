@@ -34,10 +34,10 @@ Changelog 1.1.0.0:
 			<![CDATA[
 Avec ce mod, les assistants pourront conduire vos véhicules de chargement, il suffit de placer le véhicule directement devant le tas et d'appuyer sur la touche "H".
 Si vous souhaitez décharger le matériel sur le sol, appuyez sur "CTRL + I" avant d'engager l'assistant.
-L'aide continuera à conduire et à charger jusqu'à ce qu'il ne trouve plus rien à charger.
+L'ouvrier continuera à conduire et à charger jusqu'à ce qu'il ne trouve plus rien à charger.
 
 Changelog 1.1.0.0:
-- Mise en œuvre de la capacité à se diriger vers l'IA
+- Amélioration de la direction de l'IA
 - Compatibilité améliorée avec d'autres mods
 - Amélioration du comportement du "Holmer Terra Felis 2
 ]]>
